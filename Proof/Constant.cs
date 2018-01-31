@@ -14,6 +14,11 @@ public class Constant : LogicalForm {
         return this;
     }
 
+    public override string ToString() {
+        return "[" + id + "]";
+    }
+
+
 	//public ISemanticValue Denotation(Model m) {
 	//	return m.get(id);
 	//}

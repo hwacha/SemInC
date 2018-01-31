@@ -28,7 +28,7 @@ public class Individual : ISemanticValue{
       //  this.name = e;
     //}
 
-    public bool Equals(System.Object o)
+    public override bool Equals(System.Object o)
     {
         return (o.GetType() == typeof(Individual)) && (((Individual)o).id == this.id);
     }
