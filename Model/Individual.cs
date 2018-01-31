@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Individual : ISemanticValue{
 
@@ -43,10 +42,6 @@ public class Individual : ISemanticValue{
     {
         return new Individual(id);
     }
-
-	static void main() {
-		Debug.Log("hi");
-	}
 }
 
 

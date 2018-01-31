@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 //import syntax.Expression;
 
@@ -112,25 +111,5 @@ public class TruthValue : ISemanticValue
     public bool Update(ISemanticValue that)
     {
         throw new NotImplementedException();
-    }
-
-    public static void Main()
-    {
-        TruthValue v = new TruthValue();
-        Debug.Log(v.toString());
-        Debug.Log(v.Add(true));
-        Debug.Log(v.toString());
-        Debug.Log(v.Add(true));
-        Debug.Log(v.toString());
-        Debug.Log(v.Add(false));
-        Debug.Log(v.toString());
-        v.Clear();
-        Debug.Log(v.toString());
-        Debug.Log(v.Add(false));
-        Debug.Log(v.toString());
-        Debug.Log(v.Add(false));
-        Debug.Log(v.toString());
-        Debug.Log(v.Add(true));
-        Debug.Log(v.toString());
     }
 }
