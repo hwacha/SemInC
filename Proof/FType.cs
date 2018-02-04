@@ -8,7 +8,7 @@ public class FType : ISemanticType {
 
     public FType(ISemanticType basetype, LogicalForm formula) {
         if (!formula.IsFormula() || formula.IsClosed()) {
-            System.Console.WriteLine("not a formula, or not free");
+            System.Console.WriteLine("FType failed: not a formula, or not free");
             return;
             // error
         }
@@ -16,7 +16,7 @@ public class FType : ISemanticType {
         vars.MoveNext();
         Variable first = vars.Current;
         if (vars.MoveNext()) {
-            System.Console.WriteLine("more than one free variable");
+            System.Console.WriteLine("FType failed: more than one free variable");
             return;
             // error (more than one free variable)
         }
@@ -25,11 +25,10 @@ public class FType : ISemanticType {
             System.Console.WriteLine(first.GetSemanticType());
             System.Console.WriteLine(basetype);
 
-            System.Console.WriteLine("types aren't equal");
+            System.Console.WriteLine("FType failed: types aren't equal");
             return;
             // error
         }
-        System.Console.WriteLine("made properly");
         this.basetype = basetype;
         this.formula = formula;
     }
@@ -40,5 +39,21 @@ public class FType : ISemanticType {
 
     public LogicalForm GetFormula() {
         return formula;
+    }
+
+    public override bool Equals(Object o) {
+        if (o.GetType() != typeof(FType)) {
+            return false;
+        }
+
+        FType that = (FType) o;
+
+        return this.basetype.Equals(that.basetype)
+            && this.formula.Equals(that.formula);
+    }
+
+    public override string ToString() {
+        return "(" + basetype.ToString()
+            + ": " + formula.ToString() + ")";
     }
 }
