@@ -43,11 +43,5 @@ public class Individual : ISemanticValue{
         return new Individual(id);
     }
 }
-
-
-
-
-
-
 //import syntax.Expression;
 

@@ -47,51 +47,51 @@ public class Function : ISemanticValue {
         return map.Values;
     }
 
- //   private string ToString(int depth)
- //   {
- //       string tab = mult("  ", depth + 1);
- //       StringBuilder s = new StringBuilder();
- //       //s.append("{\n");
- //       s.Append("\n");
- //       for (SemanticValue input : map.keySet())
- //       {
- //           s.Append(tab);
- //           if (input instanceof Function) {
- //           s.append(((Function)input).toString(depth + 1));
- //       } else 
- //           s.append(input);
- //       }
- //       s.append(" -> ");
- //       SemanticValue output = map.get(input);
- //       if (output instanceof Function) {
- //           s.append(((Function)output).toString(depth + 2));
- //       } else {
- //           s.append(output);
- //       }
- //       s.append("\n");
- //   }
-	////s.append(tab + "}");
-	//	return s.ToString();
-	//}
-
-private string Mult(string str, int n)
-{
-    StringBuilder s = new StringBuilder();
-    for (int i = 0; i < n; i++)
+    private string ToString(int depth)
     {
-        s.Append(str);
-    }
-    return s.ToString();
-}
+        string tab = mult("  ", depth + 1);
+        StringBuilder s = new StringBuilder();
+        //s.append("{\n");
+        s.Append("\n");
+        foreach (SemanticValue input in map.keySet())
+        {
+            s.Append(tab);
+            if (input.getType() == typeof(Function)) {
+            s.append(((Function)input).toString(depth + 1));
+        } else 
+                s.append(input);
+        s.append(" -> ");
+        SemanticValue output = map.get(input);
+        if (output.getType() == typeof(Function)) {
+            s.append(((Function) output).toString(depth + 2));
+        } else {
+            s.append(output);
+        }
+            s.append("\n");
+        }
+	    //s.append(tab + "}");
+	    	return s.ToString();
+	}
 
-//public string ToString()
-//{
-//    return ToString(0);
-//}
+    private string Mult(string str, int n)
+    {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < n; i++)
+        {
+            s.Append(str);
+        }
+        return s.ToString();
+    }
+
+    public string ToString()
+    {
+        return ToString(0);
+    }
 
     public bool Update(ISemanticValue that)
-{
-    if (!(that.GetType() == typeof(Function))) {
+    {
+    if (!(that.GetType() == typeof(Function)))
+    {
         return false;
     }
     Function other = (Function)that;
@@ -110,7 +110,6 @@ private string Mult(string str, int n)
             hasUpdated = true;
         }
     }
-
     return hasUpdated;
 }
 
