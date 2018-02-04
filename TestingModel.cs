@@ -32,6 +32,7 @@ public class Testing {
     }
 
     static void Main() {
+        System.Console.WriteLine("TESTING MODEL");
         TestTruthValues();
         TestLogicalForms();
     }

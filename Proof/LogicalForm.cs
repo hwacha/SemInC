@@ -29,6 +29,4 @@ public abstract class LogicalForm {
 	// abstract ISemanticValue Denotation(Model m);
 
     public abstract LogicalForm Bind(int id, LogicalForm l);
-
-    
 }

@@ -1,1 +1,2 @@
-mono Testing.exe
+mono TestingProof.exe;
+mono TestingModel.exe
