@@ -34,4 +34,8 @@ public class App : LogicalForm {
     public override LogicalForm Bind(int id, LogicalForm l) {
         return new App(f.Bind(id, l), x.Bind(id, l));
     }
+
+    public override string ToString() {
+        return "(" + f.ToString() + " " + x.ToString() + ")";
+    }
 }

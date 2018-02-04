@@ -3,84 +3,49 @@ using System.Collections.Generic;
 
 public class Rule {
 
-    ////package proof;
+    private List<LogicalForm> top = new List<LogicalForm>();
+    private List<LogicalForm> bot = new List<LogicalForm>();
 
-    ////import java.util.HashSet;
-    ////import java.util.LinkedList;
-    ////import java.util.List;
-    ////import java.util.Set;
+    public List<LogicalForm> GetTop() {
+        return top;
+    }
 
-    //    private List<LogicalForm> top;
-    //    private List<LogicalForm> bot;
+    public List<LogicalForm> GetBottom() {
+        return bot;
+    }
 
-    //    public Rule()
-    //    {
-    //        top = new LinkedList<LogicalForm>();
-    //        bot = new LinkedList<LogicalForm>();
-    //    }
+    public bool AddTop(LogicalForm l) {
+        if (l.IsFormula()) {
+            top.Add(l);
+            return true;
+        }
+        return false;
+    }
 
-    //    public List<LogicalForm> getTop()
-    //    {
-    //        return top;
-    //    }
+    public bool AddBottom(LogicalForm l) {
+        if (l.IsFormula()) {
+            bot.Add(l);
+            return true;
+        }
+        return false;
+    }
 
-    //    public List<LogicalForm> getBottom()
-    //    {
-    //        return bot;
-    //    }
+    private bool Move(LogicalForm l, List<LogicalForm> from, List<LogicalForm> to) {
+        if (from.Contains(l)) {
+            from.Remove(l);
+            to.Add(l);
+            return true;
+        }
+        return false;
+    }
 
-    //    public bool addTop(LogicalForm l)
-    //    {
-    //        if (l.isFormula())
-    //        {
-    //            top.add(l);
-    //            return true;
-    //        }
-    //        return false;
-    //    }
+    public bool MoveUp(LogicalForm l) {
+        return Move(l, bot, top);
+    }
 
-    //    public bool AddBottom(LogicalForm l)
-    //    {
-    //        if (l.isFormula())
-    //        {
-    //            bot.Add(l);
-    //            return true;
-    //        }
-    //        return false;
-    //    }
-
-    //    private bool Move(LogicalForm l, List<LogicalForm> from, List<LogicalForm> to)
-    //    {
-    //        if (from.contains(l))
-    //        {
-    //            from.remove(l);
-    //            if (l instanceof Not) {
-    //                Not n = ((Not)l);
-    //                to.add(n.getSubsentence());
-    //            } else {
-    //                try
-    //                {
-    //                    to.add(new Not(l));
-    //                }
-    //                catch (InvalidTypeException e)
-    //                {
-    //                    e.printStackTrace();
-    //                }
-    //            }
-    //            return true;
-    //        }
-    //        return false;
-    //    }
-
-    //    public bool moveUp(LogicalForm l)
-    //    {
-    //        return move(l, bot, top);
-    //    }
-
-    //    public bool moveDown(LogicalForm l)
-    //    {
-    //        return move(l, top, bot);
-    //    }
+    public bool moveDown(LogicalForm l) {
+        return Move(l, top, bot);
+    }
 
     //    public Rule ToContradiction()
     //    {
