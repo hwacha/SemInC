@@ -16,9 +16,9 @@ public class Variable : LogicalForm {
 		return id;
 	}
 
-	//public override ISemanticValue Denotation(Model m) {
-	//	return null;
-	//}
+	public override ISemanticValue Denotation(Model m) {
+		return null;
+	}
 
 	public override String ToString() {
 		return "{" + id + "}";

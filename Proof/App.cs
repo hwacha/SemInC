@@ -27,12 +27,40 @@ public class App : LogicalForm {
 
         this.isFormula = this.type.GetType() == typeof(T);
 
+        this.freeVariables = f.MergeVariables(x);
+
         this.f = f;
         this.x = x;
     }
 
+    public LogicalForm Reduce() {
+        if (f.GetType() == typeof(Lambda)) {
+            Lambda l = (Lambda) f;
+            return l.Apply(x);
+        }
+        return this;
+    }
+
     public override LogicalForm Bind(int id, LogicalForm l) {
         return new App(f.Bind(id, l), x.Bind(id, l));
+    }
+
+    public override ISemanticValue Denotation(Model m) {
+        if (!IsClosed()) {
+            return null;
+        }
+        
+        if (f.GetType() == typeof(Lambda)) {
+            return this.Reduce().Denotation(m);
+        }
+        
+        ISemanticValue d = f.Denotation(m);
+
+        if (d.GetType() == typeof(Function)) {
+            return ((Function) d).Apply(x.Denotation(m));
+        }
+
+        return null;
     }
 
     public override string ToString() {

@@ -19,7 +19,7 @@ public class Constant : LogicalForm {
     }
 
 
-	//public ISemanticValue Denotation(Model m) {
-	//	return m.get(id);
-	//}
+	public override ISemanticValue Denotation(Model m) {
+		return m.Get(id);
+	}
 }

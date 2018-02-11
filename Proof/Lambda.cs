@@ -9,9 +9,12 @@ public class Lambda : LogicalForm {
         : base(new Arrow(v.GetSemanticType(), l.GetSemanticType())) {
         this.v = v;
         this.l = l;
+
+        this.freeVariables = l.CloneVariables();
+        freeVariables.Remove(v);
     }
 
-    public LogicalForm LambdaApply(LogicalForm x) {
+    public LogicalForm Apply(LogicalForm x) {
         return l.Bind(v.GetID(), x);
     }
 
@@ -20,6 +23,12 @@ public class Lambda : LogicalForm {
             return this;
         }
         return new Lambda(v, l.Bind(id, lf));
+    }
+
+    public override ISemanticValue Denotation(Model m) {
+        return null; //TODO this is also wrong.
+        // Should I try to detect when such a
+        // function is in the model, or just spawn a new one?
     }
 
     public override string ToString() {

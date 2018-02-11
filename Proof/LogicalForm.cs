@@ -26,7 +26,49 @@ public abstract class LogicalForm {
         return freeVariables;
     }
 
-	// abstract ISemanticValue Denotation(Model m);
+	public abstract ISemanticValue Denotation(Model m);
+
+    public virtual UpdateInfo Make(Model m, TruthValue.T v) {
+        if (!(IsFormula() && IsClosed())) {
+            return UpdateInfo.NoChange;
+        }
+
+        TruthValue currentValue = (TruthValue) Denotation(m);
+
+        if (currentValue.Get() == v) {
+            return UpdateInfo.NoChange;
+        }
+
+        if (currentValue.Get() == TruthValue.T.Unknown) {
+            return currentValue.Add(v);
+        }
+
+        return UpdateInfo.Warning;
+    }
+
+    public HashSet<Variable> CloneVariables() {
+        HashSet<Variable> newVs = new HashSet<Variable>();
+
+        foreach (Variable v in freeVariables) {
+            newVs.Add(v);
+        }
+
+        return newVs;
+    }
+
+    public HashSet<Variable> MergeVariables(LogicalForm l) {
+        HashSet<Variable> newVs = new HashSet<Variable>();
+
+        foreach (Variable v in freeVariables) {
+            newVs.Add(v);
+        }
+
+        foreach (Variable v in l.GetFreeVariables()) {
+            newVs.Add(v);
+        }
+
+        return newVs;
+    }
 
     public abstract LogicalForm Bind(int id, LogicalForm l);
 }

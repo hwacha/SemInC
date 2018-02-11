@@ -1,2 +1,2 @@
-mcs */*.cs TestingProof.cs -out:TestingProof.exe;
-mcs */*.cs TestingModel.cs -out:TestingModel.exe
+mcs */*.cs TestingProof.cs -out:TestingProof.exe -nowarn:CS0659,CS0414,CS0219;
+mcs */*.cs TestingModel.cs -out:TestingModel.exe -nowarn:CS0659,CS0414,CS0219

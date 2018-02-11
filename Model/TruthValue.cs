@@ -2,32 +2,28 @@
 using System.Collections;
 using System.Collections.Generic;
 
-//import syntax.Expression;
-
 public class TruthValue : ISemanticValue 
 {
     public enum T { True, False, Unknown }
-    public enum UpdateInfo { Updated, NoChange, Warning }
     private T value;
-    private UpdateInfo UInfo;
 
-    public TruthValue()
-    {
+    public TruthValue() {
             value = T.Unknown;
     }
 
-    public TruthValue(T value)
-    {
+    public TruthValue(T value) {
             this.value = value;
     }
 
-    public bool IsUnknown()
-    {
+    public T Get() {
+        return value;
+    }
+
+    public bool IsUnknown() {
         return value == T.Unknown;
     }
 
-    public bool IsTrue()
-    {
+    public bool IsTrue() {
         return value == T.True;
     }
 
@@ -39,6 +35,18 @@ public class TruthValue : ISemanticValue
     public void Clear()
     {
         value = T.Unknown;
+    }
+
+    public UpdateInfo Add(T val) {
+        if (val == T.Unknown) {
+            return UpdateInfo.NoChange;
+        }
+        
+        if (val == T.True) {
+            return Add(true);
+        }
+        
+        return Add(false);
     }
 
     public UpdateInfo Add(bool val)

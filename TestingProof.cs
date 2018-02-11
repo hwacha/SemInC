@@ -60,9 +60,13 @@ public class Testing {
 
         System.Console.WriteLine(variableReplace);
 
-        System.Console.WriteLine(l.LambdaApply(new Constant(new E(), 40)));
+        System.Console.WriteLine(l.Apply(new Constant(new E(), 40)));
 
         System.Console.WriteLine("=====================");
+    }
+
+    static void TestRule() {
+        
     }
 
     static void Main() {

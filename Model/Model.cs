@@ -2,15 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Model { //this has only been partially changed from Java to C#
-    // //package model;
-    // //import syntax.Expression;
-
-    // public static int ID_COUNT = -1;
-    // private Dictionary<int, ISemanticValue> model = new Dictionary<int, ISemanticValue>();
+    private int ID_COUNT = 1000;
+    private Dictionary<int, ISemanticValue> model = new Dictionary<int, ISemanticValue>();
     // // to speed things up, change from a map to semantic values to rules
-    // private HashSet<Rule> rules = new HashSet<Rule>();
+    private HashSet<Rule> rules = new HashSet<Rule>();
+
+    public static int WRAPPERS_ID = 5;
+
+    public int GetNextAvailableID() {
+        ID_COUNT++;
+        return ID_COUNT;
+    }
 
     // public Model() { }
+    // 
+    public UpdateInfo Add(int id, ISemanticValue v) {
+        if (model.ContainsKey(id)) {
+            return UpdateInfo.NoChange;
+        }
+        model[id] = v;
+        return UpdateInfo.Updated;
+    }
 
     // public bool Add(ISemanticValue[] values)
     // {
@@ -30,10 +42,9 @@ public class Model { //this has only been partially changed from Java to C#
     //     return true; //TODO make more restrictive
     // }
 
-    // public ISemanticValue get(int id)
-    // {
-    //     return model.get(id);
-    // }
+    public ISemanticValue Get(int id) {
+        return model[id];
+    }
 
     // public bool Satisfies(proof.LogicalForm l)
     // {
@@ -49,6 +60,15 @@ public class Model { //this has only been partially changed from Java to C#
     //     }
     //     return false;
     // }
+    
+    // Updates the Model such that l has the truth value v
+    public UpdateInfo Make(LogicalForm l, TruthValue.T v) {
+        if (l.IsClosed() && l.IsFormula()) {
+            return UpdateInfo.NoChange;
+        }
+
+        return l.Make(this, v);
+    }
 
     // public bool Update(LogicalForm l) //possibly rename bc Update means something else in Unity
     // {
