@@ -61,45 +61,43 @@ public class Model { //this has only been partially changed from Java to C#
         return Make(s, TruthValue.T.True);
     }
 
-    // public bool Update(LogicalForm l) 
-    // {
-    //     if (l.isClosed() && l.isFormula())
-    //     {
-    //         ISemanticValue s = l.denotation(this);
-    //         if (s.GetType() == typeof(TruthValue))
-    //         {
-    //             TruthValue t = (TruthValue)s;
-    //             bool isNot = (l.getType() == typeof(Not));
-    //             if (isNot)
-    //             {
-    //                 Not n = (Not)l;
-    //                 t = (TruthValue)n.sub().denotation(this);
-    //             }
-    //             bool changed = t.Add(!isNot); //TODO this is hacky and won't work for double negatives
-    //             return changed;
-    //         }
-    //     }
-    //     return false;
-    // }
+    private HashSet<int> GetDomain(ISemanticType t) {
+        HashSet<int> baseSet = new HashSet<int>();
 
-    // // updates THIS model according to m (m is unchanged)
-    // public bool update(Model m)
-    // {
-    //     bool hasUpdated = false;
-    //     foreach (Entry<Integer, ISemanticValue> x in m.model.entrySet())
-    //     {
-    //         if (this.model.containsKey(x.getKey()))
-    //         {
-    //             hasUpdated = this.model.get(x.getKey()).update(x.getValue()) || hasUpdated;
-    //         }
-    //         else
-    //         {
-    //             this.model.put(x.getKey(), x.getValue().sClone());
-    //             hasUpdated = true;
-    //         }
-    //     }
-    //     return hasUpdated;
-    // }
+        // truth value
+        if (t.Equals(new T())) {
+            baseSet.Add(0);
+            baseSet.Add(1);
+            baseSet.Add(2);
+            return baseSet;
+        }
+        
+        // individuals
+        if (t.Equals(new E())) {
+            // what the set of individuals will be
+            int INDIVIDUALS_ID = 3;
+
+            // foreach (ISemanticValue v in Get(INDIVIDUALS_ID).Domain()) {
+            //     baseSet.Add(v);
+            // }
+            
+            return baseSet;
+        }
+
+        // formula restriction
+        if (t.GetType() == typeof(FType)) {
+            // FType ft = (FType) t;
+            // baseSet = GetDomain(ft.GetBaseType());
+
+            // foreach (ISemanticValue v in baseSet) {
+            // }
+            // TODO work this out
+        }
+
+        // TODO arrow types?
+
+        return baseSet;
+    }
 
     // private Set<Integer> getDomain(SemanticType t)
     // {
@@ -117,6 +115,25 @@ public class Model { //this has only been partially changed from Java to C#
     //         }
     //     }
     //     return keys;
+    // }
+    // 
+    //     // // updates THIS model according to m (m is unchanged)
+    // public bool update(Model m)
+    // {
+    //     bool hasUpdated = false;
+    //     foreach (Entry<Integer, ISemanticValue> x in m.model.entrySet())
+    //     {
+    //         if (this.model.containsKey(x.getKey()))
+    //         {
+    //             hasUpdated = this.model.get(x.getKey()).update(x.getValue()) || hasUpdated;
+    //         }
+    //         else
+    //         {
+    //             this.model.put(x.getKey(), x.getValue().sClone());
+    //             hasUpdated = true;
+    //         }
+    //     }
+    //     return hasUpdated;
     // }
 
     // // updates according to a rule, assuming variables have been bound with a value
