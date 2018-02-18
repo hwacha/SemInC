@@ -70,5 +70,9 @@ public abstract class LogicalForm {
         return newVs;
     }
 
+    public virtual LogicalForm Negate() {
+        return new Not(this);
+    }
+
     public abstract LogicalForm Bind(int id, LogicalForm l);
 }

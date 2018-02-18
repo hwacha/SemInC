@@ -38,4 +38,8 @@ public class Not : LogicalForm {
     public override LogicalForm Bind(int id, LogicalForm l) {
         return new Not(sub.Bind(id, l));
     }
+
+    public override LogicalForm Negate() {
+        return sub;
+    }
 }

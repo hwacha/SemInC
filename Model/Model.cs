@@ -14,8 +14,6 @@ public class Model { //this has only been partially changed from Java to C#
         return ID_COUNT;
     }
 
-    // public Model() { }
-    // 
     public UpdateInfo Add(int id, ISemanticValue v) {
         if (model.ContainsKey(id)) {
             return UpdateInfo.NoChange;
@@ -24,45 +22,33 @@ public class Model { //this has only been partially changed from Java to C#
         return UpdateInfo.Updated;
     }
 
-    // public bool Add(ISemanticValue[] values)
-    // {
-    //     foreach (ISemanticValue x in values)
-    //     {
-    //         model[x.getid()] = x;
-    //     }
-    //     return true; //TODO make more restrictive
-    // }
-
-    // public bool Add(Rule[] rs)
-    // {
-    //     foreach (Rule r in rs)
-    //     {
-    //         rules.Add(r);
-    //     }
-    //     return true; //TODO make more restrictive
-    // }
+    public UpdateInfo Add(Rule r) {
+        if (rules.Contains(r)) {
+            return UpdateInfo.NoChange;
+        }
+        rules.Add(r);
+        return UpdateInfo.Updated;
+    }
 
     public ISemanticValue Get(int id) {
         return model[id];
     }
+    
+    public bool Satisfies(LogicalForm l) {
+        if (l.IsClosed() && l.IsFormula()) {
+            ISemanticValue s = l.Denotation(this);
 
-    // public bool Satisfies(proof.LogicalForm l)
-    // {
-    //     if (l.isClosed() && l.isFormula())
-    //     {
-    //         ISemanticValue s = l.denotation(this);
-    //         //that.GetType() == typeof(Function))
-    //         if (s.GetType() == typeof(TruthValue))
-    //         {
-    //             TruthValue t = (TruthValue)s;
-    //             return t.isTrue();
-    //         }
-    //     }
-    //     return false;
-    // }
+            if (s.GetType() == typeof(TruthValue)) {
+                TruthValue t = (TruthValue) s;
+                return t.IsTrue();
+            }
+            return false;
+        }
+        return false;
+    }
     
     // Updates the Model such that l has the truth value v
-    public UpdateInfo Make(LogicalForm l, TruthValue.T v) {
+    private UpdateInfo Make(LogicalForm l, TruthValue.T v) {
         if (l.IsClosed() && l.IsFormula()) {
             return UpdateInfo.NoChange;
         }
@@ -70,7 +56,12 @@ public class Model { //this has only been partially changed from Java to C#
         return l.Make(this, v);
     }
 
-    // public bool Update(LogicalForm l) //possibly rename bc Update means something else in Unity
+    //possibly rename bc Update means something else in Unity
+    public UpdateInfo Update(LogicalForm s) {
+        return Make(s, TruthValue.T.True);
+    }
+
+    // public bool Update(LogicalForm l) 
     // {
     //     if (l.isClosed() && l.isFormula())
     //     {
