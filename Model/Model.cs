@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Model {
     private int ID_COUNT = 1000;
-    private Dictionary<int, ISemanticValue> model = new Dictionary<int, ISemanticValue>();
+    private Dictionary<ISemanticType, Dictionary<int, ISemanticValue>> model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
     // to speed things up, change from a map to semantic values to rules
     private HashSet<Rule> rules = new HashSet<Rule>();
 
@@ -14,11 +15,15 @@ public class Model {
         return ID_COUNT;
     }
 
-    public UpdateInfo Add(int id, ISemanticValue v) {
-        if (model.ContainsKey(id)) {
+    public UpdateInfo Add(ISemanticType t, int id, ISemanticValue v) {
+        if (!model.ContainsKey(t)) {
+            model[t] = new Dictionary<int, ISemanticValue>();
+        }
+        Dictionary<int, ISemanticValue> modelByType = model[t];
+        if (modelByType.ContainsKey(id)) {
             return UpdateInfo.NoChange;
         }
-        model[id] = v;
+        modelByType[id] = v;
         return UpdateInfo.Updated;
     }
 
@@ -30,14 +35,13 @@ public class Model {
         return UpdateInfo.Updated;
     }
 
-    public ISemanticValue Get(int id) {
-        return model[id];
+    public ISemanticValue Get(ISemanticType t, int id) {
+        return model[t][id];
     }
     
     public bool Satisfies(LogicalForm l) {
         if (l.IsClosed() && l.IsFormula()) {
             ISemanticValue s = l.Denotation(this);
-
             if (s.GetType() == typeof(TruthValue)) {
                 TruthValue t = (TruthValue) s;
                 return t.IsTrue();
@@ -62,41 +66,33 @@ public class Model {
     }
 
     private HashSet<int> GetDomain(ISemanticType t) {
-        HashSet<int> baseSet = new HashSet<int>();
-
-        // truth value
-        if (t.Equals(new T())) {
-            baseSet.Add(0);
-            baseSet.Add(1);
-            baseSet.Add(2);
-            return baseSet;
-        }
-        
-        // individuals
-        if (t.Equals(new E())) {
-            // what the set of individuals will be
-            int INDIVIDUALS_ID = 3;
-
-            // foreach (ISemanticValue v in Get(INDIVIDUALS_ID).Domain()) {
-            //     baseSet.Add(v);
-            // }
-            
-            return baseSet;
-        }
-
-        // formula restriction
         if (t.GetType() == typeof(FType)) {
-            // FType ft = (FType) t;
-            // baseSet = GetDomain(ft.GetBaseType());
+            FType fType = (FType) t;
+            
+            LogicalForm formula = fType.GetFormula();
 
-            // foreach (ISemanticValue v in baseSet) {
-            // }
-            // TODO work this out
+            int varID = formula.GetFreeVariables().Single<Variable>().GetID();
+
+            ISemanticType baseType = fType.GetBaseType();
+
+            Dictionary<int,ISemanticValue>.KeyCollection baseSet = model[baseType].Keys;
+            
+            HashSet<int> finalSet = new HashSet<int>();
+
+            foreach (int i in baseSet) {
+                if (Satisfies(formula.Bind(varID, new Constant(baseType, i)))) {
+                    finalSet.Add(i);
+                }
+            }
+            return finalSet;
+        }
+        HashSet<int> theSet = new HashSet<int>();
+        
+        foreach (int i in model[t].Keys) {
+            theSet.Add(i);
         }
 
-        // TODO arrow types?
-
-        return baseSet;
+        return theSet;
     }
 
     // private Set<Integer> getDomain(SemanticType t)

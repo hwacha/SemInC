@@ -17,7 +17,7 @@ public class Or : LogicalForm {
     }
 
     public override UpdateInfo Make(Model m, TruthValue.T v) {
-        Function wrappers = (Function) m.Get(Model.WRAPPERS_ID);
+        Function wrappers = (Function) m.Get(GetSemanticType(), Model.WRAPPERS_ID);
         Wrapper w = new Wrapper(this);
         
         // if this logical form is already in the model
@@ -40,7 +40,7 @@ public class Or : LogicalForm {
     }
 
     public override ISemanticValue Denotation(Model m) {
-        return ((Function) m.Get(Model.WRAPPERS_ID)).Apply(new Wrapper(this));
+        return ((Function) m.Get(GetSemanticType(), Model.WRAPPERS_ID)).Apply(new Wrapper(this));
     }
 
     public override LogicalForm Bind(int id, LogicalForm l) {
