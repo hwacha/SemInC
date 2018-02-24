@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Model { //this has only been partially changed from Java to C#
+public class Model {
     private int ID_COUNT = 1000;
     private Dictionary<int, ISemanticValue> model = new Dictionary<int, ISemanticValue>();
-    // // to speed things up, change from a map to semantic values to rules
+    // to speed things up, change from a map to semantic values to rules
     private HashSet<Rule> rules = new HashSet<Rule>();
 
     public static int WRAPPERS_ID = 5;
@@ -188,8 +188,7 @@ public class Model { //this has only been partially changed from Java to C#
     //     do
     //     {
     //         didUpdate = false;
-    //         foreach (Rule r in rules)
-    //         {
+    //         foreach (Rule r in rules) {
     //             didUpdate = (Update(r) || didUpdate);
     //         }
     //     } while (didUpdate);
