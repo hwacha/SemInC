@@ -63,6 +63,7 @@ public class Model {
         return model[t][id];
     }
     
+    // super compatible
     public bool Satisfies(LogicalForm l) {
         if (l.IsClosed() && l.IsFormula()) {
             ISemanticValue s = l.Denotation(this);
@@ -81,27 +82,39 @@ public class Model {
         return false;
     }
     
-    // Updates the Model such that l has the truth value v
+    // Updates the Model (M) such that
+    // l has the truth value v in M
     private UpdateInfo Make(LogicalForm l, TruthValue.T v) {
         if (l.IsClosed() && l.IsFormula()) {
             return UpdateInfo.NoChange;
         }
         return l.Make(this, v);
     }
-
-    //possibly rename bc Update means something else in Unity
+    
+    // Makes s true in M
     public UpdateInfo Update(LogicalForm s) {
         return Make(s, TruthValue.T.True);
     }
 
+    // Super compatible
     private HashSet<int> GetDomain(ISemanticType t) {
+        Model currentModel = super;
         if (t.GetType() == typeof(FType)) {
             FType fType = (FType) t;
             LogicalForm formula = fType.GetFormula();
             int varID = formula.GetFreeVariables().Single<Variable>().GetID();
             
             ISemanticType baseType = fType.GetBaseType();
+            
+            // populating the set with all semantic values
+            // (including those in super models)
+            // possible error: basetype is undefined in M
             Dictionary<int,ISemanticValue>.KeyCollection baseSet = model[baseType].Keys;
+
+            while (currentModel != null) {
+                // possible error: basetype is undefined in M
+                baseSet.Union<int>(currentModel.model[baseType].Keys);
+            }
             
             HashSet<int> finalSet = new HashSet<int>();
             
@@ -112,10 +125,16 @@ public class Model {
             }
             return finalSet;
         }
+        
         HashSet<int> theSet = new HashSet<int>();
         
         foreach (int i in model[t].Keys) {
             theSet.Add(i);
+        }
+
+        while (currentModel != null) {
+            // possible error: t is undefined in M
+            theSet.UnionWith(currentModel.model[t].Keys);
         }
 
         return theSet;
