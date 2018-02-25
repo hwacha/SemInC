@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 
 public class Rule {
+    // 1. store formula rule
+    // 2. when rule is added to a model, make all the sentence rules you can
+    // 3. if a semantic value gets added, check the rules to add another sentence rule
+    // 4. formula rules field (which has a set of semantic values)
+    // 5. sentence rules field
 
     private List<LogicalForm> top = new List<LogicalForm>();
     private List<LogicalForm> bot = new List<LogicalForm>();
+    // private HashSet<Variable> freeVariables = new HashSet<Variable>();
 
     public List<LogicalForm> GetTop() {
         return top;
@@ -30,22 +36,22 @@ public class Rule {
         return false;
     }
 
-    private bool Move(LogicalForm l, List<LogicalForm> from, List<LogicalForm> to) {
-        if (from.Contains(l)) {
-            from.Remove(l);
-            to.Add(l);
-            return true;
-        }
-        return false;
-    }
+    // private bool Move(LogicalForm l, List<LogicalForm> from, List<LogicalForm> to) {
+    //     if (from.Contains(l)) {
+    //         from.Remove(l);
+    //         to.Add(l);
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
-    public bool MoveUp(LogicalForm l) {
-        return Move(l, bot, top);
-    }
+    // public bool MoveUp(LogicalForm l) {
+    //     return Move(l, bot, top);
+    // }
 
-    public bool moveDown(LogicalForm l) {
-        return Move(l, top, bot);
-    }
+    // public bool MoveDown(LogicalForm l) {
+    //     return Move(l, top, bot);
+    // }
 
     //    public Rule ToContradiction()
     //    {

@@ -57,14 +57,19 @@ public abstract class LogicalForm {
     }
 
     public HashSet<Variable> MergeVariables(LogicalForm l) {
+
         HashSet<Variable> newVs = new HashSet<Variable>();
 
-        foreach (Variable v in freeVariables) {
-            newVs.Add(v);
+        if (freeVariables != null) {
+            foreach (Variable v in freeVariables) {
+                newVs.Add(v);
+            }
         }
 
-        foreach (Variable v in l.GetFreeVariables()) {
-            newVs.Add(v);
+        if (l.GetFreeVariables() != null) {
+            foreach (Variable v in l.GetFreeVariables()) {
+                newVs.Add(v);
+            }
         }
 
         return newVs;
