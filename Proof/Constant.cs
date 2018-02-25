@@ -18,7 +18,6 @@ public class Constant : LogicalForm {
         return "[" + id + "]";
     }
 
-
 	public override ISemanticValue Denotation(Model m) {
 		return m.Get(GetSemanticType(), id);
 	}

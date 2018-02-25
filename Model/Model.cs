@@ -9,7 +9,7 @@ public class Model {
     private HashSet<Rule> rules = new HashSet<Rule>();
 
     Model super;
-    // what needs to change to support model inheretance:
+    // what needs to change to support model inheretance:d
     // 1. Denotation: if not defined in a lower model, should look higher
     // 2. Satisfies: if not in lower model (for P and -P), then look higher
     // 3. Make/Update: only affect lowest level called
