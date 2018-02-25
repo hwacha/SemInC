@@ -4,15 +4,39 @@ using System.Linq;
 
 public class Model {
     private int ID_COUNT = 1000;
-    private Dictionary<ISemanticType, Dictionary<int, ISemanticValue>> model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
+    private Dictionary<ISemanticType, Dictionary<int, ISemanticValue>> model;
     // to speed things up, change from a map to semantic values to rules
     private HashSet<Rule> rules = new HashSet<Rule>();
 
+    Model super;
+    // what needs to change to support model inheretance:
+    // 1. Denotation: if not defined in a lower model, should look higher
+    // 2. Satisfies: if not in lower model (for P and -P), then look higher
+    // 3. Make/Update: only affect lowest level called
+
     public static int WRAPPERS_ID = 5;
+
+    public Model() {
+        this.model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
+        this.super = null;
+    }
+
+    public Model(Model super) {
+        this.model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
+        this.super = super;
+    }
+
+    public int GetCurrentID() {
+        return ID_COUNT;
+    }
 
     public int GetNextAvailableID() {
         ID_COUNT++;
         return ID_COUNT;
+    }
+
+    public Model GetSuperModel() {
+        return super;
     }
 
     public UpdateInfo Add(ISemanticType t, int id, ISemanticValue v) {
@@ -44,7 +68,13 @@ public class Model {
             ISemanticValue s = l.Denotation(this);
             if (s.GetType() == typeof(TruthValue)) {
                 TruthValue t = (TruthValue) s;
+                if (t.IsUnknown() && (super != null)) {
+                    return super.Satisfies(l);
+                }
                 return t.IsTrue();
+            }
+            if (super != null) {
+                return super.Satisfies(l);
             }
             return false;
         }
@@ -56,7 +86,6 @@ public class Model {
         if (l.IsClosed() && l.IsFormula()) {
             return UpdateInfo.NoChange;
         }
-
         return l.Make(this, v);
     }
 
@@ -68,17 +97,14 @@ public class Model {
     private HashSet<int> GetDomain(ISemanticType t) {
         if (t.GetType() == typeof(FType)) {
             FType fType = (FType) t;
-            
             LogicalForm formula = fType.GetFormula();
-
             int varID = formula.GetFreeVariables().Single<Variable>().GetID();
-
+            
             ISemanticType baseType = fType.GetBaseType();
-
             Dictionary<int,ISemanticValue>.KeyCollection baseSet = model[baseType].Keys;
             
             HashSet<int> finalSet = new HashSet<int>();
-
+            
             foreach (int i in baseSet) {
                 if (Satisfies(formula.Bind(varID, new Constant(baseType, i)))) {
                     finalSet.Add(i);
@@ -95,24 +121,6 @@ public class Model {
         return theSet;
     }
 
-    // private Set<Integer> getDomain(SemanticType t)
-    // {
-    //     if (!t.equals(new proof.E()))
-    //     {
-    //         return null; //TODO fuck my model isn't good enough. I'll have to type the values
-    //     }
-
-    //     HashSet<Integer> keys = new HashSet<Integer>();
-
-    //     foreach (int i in model.keySet())
-    //     {
-    //         if (model.get(i).getType() == typeof(Individual)) {
-    //             keys.Add(i);
-    //         }
-    //     }
-    //     return keys;
-    // }
-    // 
     //     // // updates THIS model according to m (m is unchanged)
     // public bool update(Model m)
     // {
