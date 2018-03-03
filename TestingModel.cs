@@ -32,23 +32,23 @@ public class Testing {
 
     static void TestAddRule()
     {
-        System.Console.WriteLine("=====================");
-        System.Console.WriteLine("Testing Add Rule:");
-        Model m = new Model();
-        Rule rule = new Rule();
-        Constant c1 = new Constant(new T(), 40); //top of some bs rule
-        Constant c2 = new Constant(new T(), 20); //bottom of some bs rule
-        rule.AddTop(c1);
-        rule.AddBottom(c2);
-        Variable v = new Variable(new T(), 1);
-        FType form = new FType(new T(), v);
-        System.Console.WriteLine(form);
-        System.Console.WriteLine("The formula is a formula?: " + form.GetFormula().IsFormula());
-        rule.AddTop(form.GetFormula()); //adding a formula to the top of a rule
-        rule.AddBottom(form.GetFormula()); //adding that same formula to the bottom of a rule
-        m.Add(rule);
-        System.Console.WriteLine(m);
-        System.Console.WriteLine("=====================");
+        // System.Console.WriteLine("=====================");
+        // System.Console.WriteLine("Testing Add Rule:");
+        // Model m = new Model();
+        // Rule rule = new Rule();
+        // Constant c1 = new Constant(new T(), 40); //top of some bs rule
+        // Constant c2 = new Constant(new T(), 20); //bottom of some bs rule
+        // rule.AddTop(c1);
+        // rule.AddBottom(c2);
+        // Variable v = new Variable(new T(), 1);
+        // FType form = new FType(new T(), v);
+        // System.Console.WriteLine(form);
+        // System.Console.WriteLine("The formula is a formula?: " + form.GetFormula().IsFormula());
+        // rule.AddTop(form.GetFormula()); //adding a formula to the top of a rule
+        // rule.AddBottom(form.GetFormula()); //adding that same formula to the bottom of a rule
+        // m.Add(rule);
+        // System.Console.WriteLine(m);
+        // System.Console.WriteLine("=====================");
     }
 
     //come back to this 
