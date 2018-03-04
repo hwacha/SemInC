@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 public class Rule {
     // 1. store formula rule
@@ -142,119 +143,24 @@ public class Rule {
         return new Rule(newTop, newBot);
     }
 
-    // public HashSet<LogicalForm> GetTop() {
-    //     return top;
-    // }
+    public override string ToString() {
+        StringBuilder s = new StringBuilder();
 
-    // public List<LogicalForm> GetBottom() {
-    //     return bot;
-    // }
-    
-    // public Rule(HashSet<LogicalForm> top) {
+        foreach (LogicalForm l in top) {
+            s.Append(l);
+            s.Append(",");
+        }
 
-    // }
+        s.Append("|-");
 
-    // public bool AddTop(LogicalForm l) {
-    //     if (l.IsFormula()) {
-    //         top.Add(l);
-    //         return true;
-    //     }
-    //     return false;
-    // }
+        for (int i = 0; i < bot.Length; i++) { 
+            foreach (LogicalForm l in bot[i]) {
+                s.Append(l);
+                s.Append(",");
+            }
+        }
 
-    // public bool AddBottom(LogicalForm l) {
-    //     if (l.IsFormula()) {
-    //         bot.Add(l);
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // private bool Move(LogicalForm l, List<LogicalForm> from, List<LogicalForm> to) {
-    //     if (from.Contains(l)) {
-    //         from.Remove(l);
-    //         to.Add(l);
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // public bool MoveUp(LogicalForm l) {
-    //     return Move(l, bot, top);
-    // }
-
-    // public bool MoveDown(LogicalForm l) {
-    //     return Move(l, top, bot);
-    // }
-
-    //    public Rule ToContradiction()
-    //    {
-    //        Rule nr = clone();
-    //        for (LogicalForm l : bot)
-    //        {
-    //            nr.moveUp(l);
-    //        }
-    //        return nr;
-    //    }
-
-    //    public Rule ToTautology()
-    //    {
-    //        Rule nr = clone();
-    //        for (LogicalForm l : bot)
-    //        {
-    //            nr.moveDown(l);
-    //        }
-    //        return nr;
-    //    }
-
-    //    public List<Rule> GetCanonicalRules()
-    //    {
-    //        Rule contradiction = toContradiction();
-    //        LinkedList<Rule> canonicalRules = new LinkedList<Rule>();
-    //        for (LogicalForm l : contradiction.top)
-    //        {
-    //            Rule nr = contradiction.clone();
-    //            nr.moveDown(l);
-    //            canonicalRules.add(nr);
-    //        }
-    //        return canonicalRules;
-    //    }
-
-    //    public Rule Clone()
-    //    {
-    //        Rule nr = new Rule();
-    //        for (LogicalForm l : top)
-    //        {
-    //            nr.addTop(l);
-    //        }
-    //        for (LogicalForm l : bot)
-    //        {
-    //            nr.addBottom(l);
-    //        }
-    //        return nr;
-    //    }
-
-    //    public String toString()
-    //    {
-    //        StringBuilder s = new StringBuilder();
-
-    //        for (LogicalForm l : top)
-    //        {
-    //            s.append(l);
-    //            s.append(",");
-    //        }
-    //        s.append("\u22A4 \u22A2 ");
-
-    //        for (LogicalForm l : bot)
-    //        {
-    //            s.append(l);
-    //            s.append(",");
-    //        }
-
-    //        s.append("\u22A5");
-
-    //        return s.toString();
-    //    }
-    //}
+        return s.ToString();
+    }
 
 }
