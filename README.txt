@@ -6,6 +6,17 @@ Please don't add a main to any class other than Testing.
 https://en.wikipedia.org/wiki/C-sharp_minor#Notable_songs
 
 TODO:
+  - add resolve inconsistencies
+    - need probabilities
+    - need algorithm that cascades down justification
+    - observation sentences are default justified
+  - split model into beliefs, desires, and intentions
+  - add submodels which encode other's beliefs, desires, intentions
+  - start making models for NPCs/common knowledge
+  - make an XML parser which handles logical forms and model information (could just make it all logical forms, as in: make all these sentences true in the model.)
+  - make interesting scenarios based on the results!
+
+DONE:
   - add rule update
     - with potential space saving by not expanding into S-Rules
     - F-Rules field
@@ -20,12 +31,4 @@ TODO:
     - 3. Check all S-Rules every update, iterate until there's no change
     - 4. If an S-Rule successfully infers something, but it in the active rules field
     - 5. if not, keep it in the S-Rules field.
-  - add resolve inconsistencies
-    - need probabilities
-    - need algorithm that cascades down justification
-    - observation sentences are default justified
-  - split model into beliefs, desires, and intentions
-  - add submodels which encode other's beliefs, desires, intentions
-  - start making models for NPCs/common knowledge
-  - make an XML parser which handles logical forms and model information (could just make it all logical forms, as in: make all these sentences true in the model.)
-  - make interesting scenarios based on the results!
+
