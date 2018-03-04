@@ -2,11 +2,14 @@ using System;
 
 public class Testing {
 
-
-    //denotation --> make sure logical form refers to correct thing in model
-    // logical forms taht are sentences ---> model.Satisfies returns right truth value, check for wrapper logical forms
-    // super model calls satisfies (not going up chain)
-    //get domain; want to get all the individuals up the chain
+    // when you add to model, make sure that shit stays there
+    // make this sentence true/false
+    //Rule.GetInference gets correct inference
+    // denotation --> make sure logical form refers to correct thing in model
+    // logical forms that are sentences ---> model.Satisfies returns right truth value, check for wrapper logical forms
+    // super model calls satisfies 
+    // model inheritence 
+    // Make, Add & Denotation only affect lowest, Satisfies & Get Domain should affect everything up the chain
 
     static void TestTruthValues() {
         System.Console.WriteLine("====================");
@@ -101,6 +104,6 @@ public class Testing {
         System.Console.WriteLine("TESTING MODEL");
         TestTruthValues();
         TestAddRule();
-        TestDenotation();
+      //  TestDenotation();
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 
 public class Rule {
@@ -117,6 +119,10 @@ public class Rule {
         }
     }
 
+    private HashSet<Variable> GetFreeVariables() {
+        return freeVariables;
+    }
+
     // public HashSet<LogicalForm> GetTop() {
     //     return top;
     // }
@@ -124,7 +130,7 @@ public class Rule {
     // public List<LogicalForm> GetBottom() {
     //     return bot;
     // }
-    
+
     // public Rule(HashSet<LogicalForm> top) {
 
     // }
@@ -225,27 +231,29 @@ public class Rule {
 
     //    }
 
-    //    public String toString()
-    //    {
-    //        StringBuilder s = new StringBuilder();
+    
+    public override String ToString()
+    {
+        StringBuilder s = new StringBuilder();
 
-    //        for (LogicalForm l : top)
-    //        {
-    //            s.append(l);
-    //            s.append(",");
-    //        }
-    //        s.append("\u22A4 \u22A2 ");
+        foreach (LogicalForm l in top)
+        {
+            s.Append(l);
+            s.Append(",");
+        }
+        s.Append("|-");
 
-    //        for (LogicalForm l : bot)
-    //        {
-    //            s.append(l);
-    //            s.append(",");
-    //        }
+        for (int i = 0; i < bot.Length; i++) { 
+        foreach (LogicalForm l in bot[i])
+        {
 
-    //        s.append("\u22A5");
+            s.Append(l);
+            s.Append(",");
+        }
+        }
 
-    //        return s.toString();
-    //    }
-    //}
-
+        return s.ToString();
+    }
 }
+
+//}

@@ -36,8 +36,10 @@ public class App : LogicalForm {
     public LogicalForm Reduce() {
         if (f.GetType() == typeof(Lambda)) {
             Lambda l = (Lambda) f;
+            System.Console.WriteLine("the type IS a lambda");
             return l.Apply(x);
         }
+        System.Console.WriteLine("the type is NOT a lambda");
         return this;
     }
 
