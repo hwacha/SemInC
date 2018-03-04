@@ -5,8 +5,11 @@ using System.Linq;
 public class Model {
     private int ID_COUNT = 1000;
     private Dictionary<ISemanticType, Dictionary<int, ISemanticValue>> model;
-    // to speed things up, change from a map to semantic values to rules
-    private HashSet<Rule> rules = new HashSet<Rule>();
+
+    // the fields for rules
+    private Dictionary<ISemanticType, HashSet<Rule>> formulaRules;
+    private HashSet<Rule> sentenceRules;
+    private HashSet<Rule> activeRules;
 
     Model super;
     // what needs to change to support model inheretance:d
@@ -16,15 +19,15 @@ public class Model {
 
     public static int WRAPPERS_ID = 5;
 
-    public Model() {
-        this.model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
-        this.super = null;
-    }
-
     public Model(Model super) {
         this.model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
+        this.formulaRules = new Dictionary<ISemanticType, HashSet<Rule>>();
+        this.sentenceRules = new HashSet<Rule>();
+        this.activeRules = new HashSet<Rule>();
         this.super = super;
     }
+
+    public Model() : this(null) {}
 
     public int GetCurrentID() {
         return ID_COUNT;
@@ -48,15 +51,59 @@ public class Model {
             return UpdateInfo.NoChange;
         }
         modelByType[id] = v;
+
+        if (formulaRules.ContainsKey(t)) {
+            foreach (Rule fr in formulaRules[t]) {
+                HashSet<Rule> srs = GetSentenceRules(fr);
+                foreach (Rule sr in srs) {
+                    sentenceRules.Add(sr);
+                }
+            }
+        }
+
         return UpdateInfo.Updated;
     }
 
-    public UpdateInfo Add(Rule r) {
-        if (rules.Contains(r)) {
-            return UpdateInfo.NoChange;
+    // generates all the sentence-rules from a formula-rule
+    public HashSet<Rule> GetSentenceRules(Rule r) {
+        HashSet<Rule> sentenceRules = new HashSet<Rule>();
+
+        if (r.IsClosed()) {
+            sentenceRules.Add(r);
+            return sentenceRules;
         }
-        rules.Add(r);
-        return UpdateInfo.Updated;
+
+        HashSet<Variable> freeVariables = r.GetFreeVariables();
+
+        foreach (Variable v in freeVariables) {
+            HashSet<int> ids = GetDomain(v.GetSemanticType());
+            foreach (int id in ids) {
+                Rule boundRule = r.Bind(v.GetID(), new Constant(v.GetSemanticType(), id));
+                sentenceRules.UnionWith(GetSentenceRules(boundRule));
+            }
+        }
+
+        return sentenceRules;
+    }
+
+    public void Add(Rule r) {
+        if (r.IsClosed()) {
+            sentenceRules.Add(r);
+        } else {
+            HashSet<Variable> variables = r.GetFreeVariables();
+            foreach (Variable v in variables) {
+                if (!formulaRules.ContainsKey(v.GetSemanticType())) {
+                    formulaRules.Add(v.GetSemanticType(), new HashSet<Rule>());
+                }
+                formulaRules[v.GetSemanticType()].Add(r);
+                // now we expand the formula rule
+                // into a bunch of sentence rules
+                
+                foreach (Rule sr in GetSentenceRules(r)) {
+                    sentenceRules.Add(r);
+                }
+            }
+        }
     }
 
     public ISemanticValue Get(ISemanticType t, int id) {
@@ -92,8 +139,55 @@ public class Model {
     }
     
     // Makes s true in M
-    public UpdateInfo Update(LogicalForm s) {
+    public UpdateInfo MakeTrue(LogicalForm s) {
         return Make(s, TruthValue.T.True);
+    }
+
+    // makes the inference prescribed by r in this model
+    public UpdateInfo MakeInference(Rule r) {
+        if (!r.IsClosed()) {
+            return UpdateInfo.NoChange;
+        }
+
+        LogicalForm inference = r.GetInference(this);
+
+        if (inference != null) {
+            sentenceRules.Remove(r);
+            activeRules.Add(r);
+            return MakeTrue(inference);    
+        }
+
+        return UpdateInfo.NoChange;
+    }
+    
+    // iteratively makes inferences based
+    // on all the rules in this model.
+    public UpdateInfo MakeInferences() {
+        bool hasChanged = false;
+        bool wasChanged = false;
+
+        do {
+            hasChanged = false;
+            foreach (Rule r in sentenceRules) {
+                UpdateInfo info = MakeInference(r);
+
+                if (info == UpdateInfo.Warning) {
+                    // TODO: do inconsistency stuff!
+                    return UpdateInfo.Warning;
+                }
+
+                if (info == UpdateInfo.Updated) {
+                    hasChanged = true;
+                    wasChanged = true;
+                }
+            }
+        } while (hasChanged);
+
+        if (wasChanged) {
+            return UpdateInfo.Updated;
+        } else {
+            return UpdateInfo.NoChange;            
+        }
     }
 
     // Super compatible
@@ -140,7 +234,7 @@ public class Model {
         return theSet;
     }
 
-    //     // // updates THIS model according to m (m is unchanged)
+    // updates THIS model according to m (m is unchanged)
     // public bool update(Model m)
     // {
     //     bool hasUpdated = false;
@@ -158,97 +252,4 @@ public class Model {
     //     }
     //     return hasUpdated;
     // }
-
-    // // updates according to a rule, assuming variables have been bound with a value
-    // private bool UpdateSentence(Rule r) {
-    //     foreach (LogicalForm l in r.getTop())
-    //     {
-    //         if (!this.satisfies(l))
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     List<LogicalForm> bot = r.getBottom();
-    //     if (bot.size() == 1)
-    //     {
-    //         return this.update(bot.get(0));
-    //     }
-    //     return false;
-    // }
-
-    // public bool Update(Rule r)
-    // {
-    //     Set<Variable> vars = r.getFreeVariables();
-    //     HashSet<Rule> rs = new HashSet<Rule>();
-    //     rs.Add(r);
-    //     foreach (Variable v in vars)
-    //     {
-    //         int varID = v.getID();
-    //         HashSet<Rule> newRules = new HashSet<Rule>();
-    //         foreach (Rule x in rs)
-    //         {
-    //             foreach (int i in getDomain(v.getType()))
-    //             {
-    //                 newRules.add(x.bind(varID, new Constant(v.getType(), i)));
-    //             }
-    //         }
-    //         rs = newRules;
-    //     }
-    //     bool anyChange = false;
-    //     foreach (Rule filledRs in rs)
-    //     {
-    //         foreach (Rule canonicalR in filledRs.getCanonicalRules())
-    //         {
-    //             anyChange = (UpdateSentence(canonicalR) || anyChange);
-    //         }
-    //     }
-    //     return anyChange;
-    // }
-
-    // public void Update() //possibly rename bc Update is something else in unity
-    // {
-    //     bool didUpdate;
-    //     do
-    //     {
-    //         didUpdate = false;
-    //         foreach (Rule r in rules) {
-    //             didUpdate = (Update(r) || didUpdate);
-    //         }
-    //     } while (didUpdate);
-    // }
-
-    // private bool InconsistencyHelper(SemanticValue v)
-    // {
-    //     if (v.getType() == typeof(TruthValue))
-    //     {
-    //         if (((TruthValue)v).isBoth())
-    //         {
-    //             return true;
-    //         }
-    //     }
-    //     if (v.getType() == typeof(Function))
-    //     {
-    //         foreach (SemanticValue x in ((Function)v).codomain())
-    //         {
-    //             if (InconsistencyHelper(x))
-    //             {
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    // public bool HasInconsistency()
-    // {
-    //     foreach (SemanticValue v in model.values())
-    //     {
-    //         if (InconsistencyHelper(v))
-    //         {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-
 }

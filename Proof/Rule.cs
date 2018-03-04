@@ -34,6 +34,14 @@ public class Rule {
         }
     }
 
+    public HashSet<Variable> GetFreeVariables() {
+        return freeVariables;
+    }
+
+    public bool IsClosed() {
+        return freeVariables.Count == 0;
+    }
+
     // returns null if nothing should be inferred,
     // otherwise, return what should be inferred
     // when this rule is applied to the model
@@ -115,6 +123,23 @@ public class Rule {
             // for now, I'll just return null.
             return null;
         }
+    }
+
+    public Rule Bind(int id, LogicalForm replace) {
+
+        HashSet<LogicalForm> newTop = new HashSet<LogicalForm>();
+        HashSet<LogicalForm>[] newBot = new HashSet<LogicalForm>[bot.Length];
+
+        foreach (LogicalForm l in top) {
+            newTop.Add(l.Bind(id, replace));
+        }
+        for (int i = 0; i < bot.Length; i++) {
+            foreach (LogicalForm l in bot[i]) {
+                newBot[i].Add(l.Bind(id, replace));
+            }
+        }
+
+        return new Rule(newTop, newBot);
     }
 
     // public HashSet<LogicalForm> GetTop() {
@@ -207,22 +232,6 @@ public class Rule {
     //            nr.addBottom(l);
     //        }
     //        return nr;
-    //    }
-
-    //    public Rule Bind(int id, LogicalForm replace)
-    //    {
-    //        Rule newRule = new Rule();
-    //        for (LogicalForm l : top)
-    //        {
-    //            newRule.addTop(l.bind(id, replace));
-    //        }
-    //        for (LogicalForm l : bot)
-    //        {
-    //            newRule.addBottom(l.bind(id, replace));
-    //        }
-
-    //        return newRule;
-
     //    }
 
     //    public String toString()
