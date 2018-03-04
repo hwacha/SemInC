@@ -96,9 +96,8 @@ public class Rule {
                         } else {
                             // for now, we treat it as though
                             // there's no change, when more than
-                            //  We might want
-                            // to change it so that there's a
-                            // disjunct
+                            // (We might want to change it
+                            // so that there's a disjunct)
                             return null;
                         }
                     }
@@ -208,20 +207,6 @@ public class Rule {
     //            nr.addBottom(l);
     //        }
     //        return nr;
-    //    }
-
-    //    public Set<Variable> getFreeVariables()
-    //    {
-    //        HashSet<Variable> vars = new HashSet<Variable>();
-    //        for (LogicalForm l : top)
-    //        {
-    //            vars.addAll(l.getFreeVariables(new HashSet<Variable>()));
-    //        }
-    //        for (LogicalForm l : bot)
-    //        {
-    //            vars.addAll(l.getFreeVariables(new HashSet<Variable>()));
-    //        }
-    //        return vars;
     //    }
 
     //    public Rule Bind(int id, LogicalForm replace)
