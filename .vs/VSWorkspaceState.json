@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Model"
+    "\\Model",
+    "\\Proof"
   ],
-  "SelectedNode": "\\TestingModel.cs",
+  "SelectedNode": "\\Proof\\Lambda.cs",
   "PreviewInSolutionExplorer": false
 }
