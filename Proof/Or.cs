@@ -1,19 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 public class Or : LogicalForm {
-    private LogicalForm left;
-    private LogicalForm right;
+    private HashSet<LogicalForm> subs;
 
-    public Or(LogicalForm left, LogicalForm right) : base(new T()) {
-        if (!(left.IsFormula() && right.IsFormula())) {
-            // error!
-            return;
+    public Or(HashSet<LogicalForm> subs) : base(new T()) {
+        if (subs.Count == 0) {
+            throw new ArgumentException();
         }
-        this.left = left;
-        this.right = right;
+
+        this.freeVariables = new HashSet<Variable>();
+        foreach (LogicalForm l in subs) {
+            if (!l.IsFormula()) {
+                throw new ArgumentException();
+            }
+            this.freeVariables = l.MergeVariables(this.freeVariables);
+        }
         this.isFormula = true;
-        this.freeVariables = left.MergeVariables(right);
     }
 
     public override UpdateInfo Make(Model m, TruthValue.T v) {
@@ -44,6 +48,11 @@ public class Or : LogicalForm {
     }
 
     public override LogicalForm Bind(int id, LogicalForm l) {
-        return new Or(left.Bind(id, l), right.Bind(id, l));
+        HashSet<LogicalForm> newSubs = new HashSet<LogicalForm>();
+        foreach (LogicalForm sub in this.subs) {
+            newSubs.Add(sub.Bind(id, l));
+        }
+
+        return new Or(newSubs);
     }
 }
