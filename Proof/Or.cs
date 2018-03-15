@@ -17,6 +17,7 @@ public class Or : LogicalForm {
             }
             this.freeVariables = l.MergeVariables(this.freeVariables);
         }
+        this.subs = subs;
         this.isFormula = true;
     }
 

@@ -3,22 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Model {
-    private int ID_COUNT = 1000;
+    // the set of semantic values in a model M.
+    // It's queried for the truth value of sentences,
+    // and the referents of expressions that refer to
+    // individuals or functions
     private Dictionary<ISemanticType, Dictionary<int, ISemanticValue>> model;
 
-    // the fields for rules
+    // the fields for rules:
+    // the rules written in compact form with free variables.
     private Dictionary<ISemanticType, HashSet<Rule>> formulaRules;
+    
+    // the rules expanded to form sentences
+    // with variables bound to constants for
+    // each possible semantic value in the given domain.
     private HashSet<Rule> sentenceRules;
+    
+    // the rules that have been used to support an inference.
+    // They are not checked each time the model updates, until
+    // there is an inconsistency which puts it back in play.
+    // Also, it's used during inconsistency resolution as a way
+    // of tracking the justification chains of a given proposition
     private HashSet<Rule> activeRules;
 
+    // the model which this model inherets from.
+    // 1. Denotation(): if not defined in a lower model, should look higher
+    // 2. Satisfies(): if not in lower model (for P and -P), then look higher
+    // 3. Make()/Update(): only affect lowest level called
     Model super;
-    // what needs to change to support model inheretance:d
-    // 1. Denotation: if not defined in a lower model, should look higher
-    // 2. Satisfies: if not in lower model (for P and -P), then look higher
-    // 3. Make/Update: only affect lowest level called
 
+    // this is the default ID number for a wrapped
+    // logical form with any semantic type.
     public static int WRAPPERS_ID = 5;
 
+    // the constructor
     public Model(Model super) {
         this.model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
         this.formulaRules = new Dictionary<ISemanticType, HashSet<Rule>>();
@@ -27,16 +44,9 @@ public class Model {
         this.super = super;
     }
 
+    // defaults to having no super model
+    // if no super model argument is provided
     public Model() : this(null) {}
-
-    public int GetCurrentID() {
-        return ID_COUNT;
-    }
-
-    public int GetNextAvailableID() {
-        ID_COUNT++;
-        return ID_COUNT;
-    }
 
     public Model GetSuperModel() {
         return super;

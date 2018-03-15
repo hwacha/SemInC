@@ -116,26 +116,26 @@ public class Testing {
     //come back to this 
     static void TestMake()
     {
-        System.Console.WriteLine("=====================");
-        System.Console.WriteLine("Testing Make:");
-        Model superModel = new Model();
-        Model subModel = new Model(superModel);
+        // System.Console.WriteLine("=====================");
+        // System.Console.WriteLine("Testing Make:");
+        // Model superModel = new Model();
+        // Model subModel = new Model(superModel);
 
-        //make a new Rule with 2 things on top, 1 thing on bottom
-        HashSet<LogicalForm> top = new HashSet<LogicalForm>();
-        Variable varTop1 = new Variable(new E(), 200);
-        Variable varTop2 = new Variable(new E(), 400);
-        top.Add(varTop1);
-        top.Add(varTop2);
-        HashSet<LogicalForm>[] bot = new HashSet<LogicalForm>[1];
-        Variable varBot1 = new Variable(new E(), 100);
-        HashSet<LogicalForm> bot1 = new HashSet<LogicalForm>();
-        bot1.Add(varBot1);
-        bot[0] = bot1;
-        Rule rule1 = new Rule(top, bot);
+        // //make a new Rule with 2 things on top, 1 thing on bottom
+        // HashSet<LogicalForm> top = new HashSet<LogicalForm>();
+        // Variable varTop1 = new Variable(new E(), 200);
+        // Variable varTop2 = new Variable(new E(), 400);
+        // top.Add(varTop1);
+        // top.Add(varTop2);
+        // HashSet<LogicalForm>[] bot = new HashSet<LogicalForm>[1];
+        // Variable varBot1 = new Variable(new E(), 100);
+        // HashSet<LogicalForm> bot1 = new HashSet<LogicalForm>();
+        // bot1.Add(varBot1);
+        // bot[0] = bot1;
+        // Rule rule1 = new Rule(top, bot);
 
-        Constant c1 = new Constant(new T(), 40);
-        c1.Make(m, TruthValue.T.False); 
+        // Constant c1 = new Constant(new T(), 40);
+        // c1.Make(m, TruthValue.T.False); 
 
         //    Variable v = new Variable(new T(), 1);
         //    FType form = new FType(new T(), v);
