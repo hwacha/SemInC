@@ -56,19 +56,13 @@ public class Rule
     // otherwise, return what should be inferred
     // when this rule is applied to the model
     // this should only be called when there are no free variables.
-    public LogicalForm GetInference(Model m)
-    {
+    public LogicalForm GetInference(Model m) {
         LogicalForm uniquelyUnsatisfiedTop = null;
-        foreach (LogicalForm l in top)
-        {
-            if (!m.Satisfies(l))
-            {
-                if (uniquelyUnsatisfiedTop == null)
-                {
+        foreach (LogicalForm l in top) {
+            if (!m.Satisfies(l)) {
+                if (uniquelyUnsatisfiedTop == null) {
                     uniquelyUnsatisfiedTop = l;
-                }
-                else
-                {
+                } else {
                     // this is the case where more than
                     // one top sentence is false
                     return null;
@@ -79,14 +73,10 @@ public class Rule
         // is there one and only one top sentence which
         // m fails to satisfy? If all the bottom sentences
         // are rejected, then reject that unique sentence.
-        if (uniquelyUnsatisfiedTop == null)
-        {
-            for (int i = 0; i < bot.Length; i++)
-            {
-                foreach (LogicalForm l in bot[i])
-                {
-                    if (!m.Satisfies(new Not(l)))
-                    {
+        if (uniquelyUnsatisfiedTop == null) {
+            for (int i = 0; i < bot.Length; i++) {
+                foreach (LogicalForm l in bot[i]) {
+                    if (!m.Satisfies(new Not(l))) {
                         // this means the rule should
                         // not infer anything at this point
                         return null;
@@ -98,41 +88,30 @@ public class Rule
             // were rejected. So we should reject
             // the only top sentence not satisfied.
             return new Not(uniquelyUnsatisfiedTop);
-        }
-        else
-        {
+        } else {
             // this is the case where all sentences
             // on the top were true,
             // so we should infer something on the bottom.
-            for (int i = 0; i < bot.Length; i++)
-            {
+            for (int i = 0; i < bot.Length; i++) {
                 // first, we go through and see if
                 // any sentence on the bottom is true already
                 // if so, we infer nothing new (but still return
                 // that, to let the system know this rule is active).
-                foreach (LogicalForm l in bot[i])
-                {
-                    if (m.Satisfies(l))
-                    {
+                foreach (LogicalForm l in bot[i]) {
+                    if (m.Satisfies(l)) {
                         return l;
                     }
                 }
             }
             // if none of the bottom sentences are satisfied by M,
             // then infer the most likely one, via the "tiers"
-            for (int i = 0; i < bot.Length; i++)
-            {
+            for (int i = 0; i < bot.Length; i++) {
                 LogicalForm uniquelySatisfiable = null;
-                foreach (LogicalForm l in bot[i])
-                {
-                    if (!m.Satisfies(new Not(l)))
-                    {
-                        if (uniquelySatisfiable == null)
-                        {
+                foreach (LogicalForm l in bot[i]) {
+                    if (!m.Satisfies(new Not(l))) {
+                        if (uniquelySatisfiable == null) {
                             uniquelySatisfiable = l;
-                        }
-                        else
-                        {
+                        } else {
                             // for now, we treat it as though
                             // there's no change, when more than
                             // (We might want to change it
@@ -143,8 +122,7 @@ public class Rule
                 }
                 // this means one and only one sentence in this tier
                 // is satisfiable. So, we infer it!
-                if (uniquelySatisfiable != null)
-                {
+                if (uniquelySatisfiable != null) {
                     return uniquelySatisfiable;
                 }
             }
@@ -157,20 +135,16 @@ public class Rule
         }
     }
 
-    public Rule Bind(int id, LogicalForm replace)
-    {
+    public Rule Bind(int id, LogicalForm replace) {
 
         HashSet<LogicalForm> newTop = new HashSet<LogicalForm>();
         HashSet<LogicalForm>[] newBot = new HashSet<LogicalForm>[bot.Length];
 
-        foreach (LogicalForm l in top)
-        {
+        foreach (LogicalForm l in top) {
             newTop.Add(l.Bind(id, replace));
         }
-        for (int i = 0; i < bot.Length; i++)
-        {
-            foreach (LogicalForm l in bot[i])
-            {
+        for (int i = 0; i < bot.Length; i++) {
+            foreach (LogicalForm l in bot[i]) {
                 newBot[i].Add(l.Bind(id, replace));
             }
         }
@@ -178,22 +152,18 @@ public class Rule
         return new Rule(newTop, newBot);
     }
 
-    public override string ToString()
-    {
+    public override string ToString() {
         StringBuilder s = new StringBuilder();
 
-        foreach (LogicalForm l in top)
-        {
+        foreach (LogicalForm l in top) {
             s.Append(l);
             s.Append(",");
         }
 
         s.Append("|-");
 
-        for (int i = 0; i < bot.Length; i++)
-        {
-            foreach (LogicalForm l in bot[i])
-            {
+        for (int i = 0; i < bot.Length; i++) {
+            foreach (LogicalForm l in bot[i]) {
                 s.Append(l);
                 s.Append(",");
             }
@@ -203,3 +173,9 @@ public class Rule
     }
 
 }
+
+// X says that P |- {X believes that P}
+// X believes that P |- {P}, ...
+
+// Bill says that it's raining
+// it's not raining
