@@ -31,15 +31,14 @@ public class Individual : ISemanticValue{
         return (o.GetType() == typeof(Individual)) && (((Individual)o).id == this.id);
     }
 
-    public bool Update(ISemanticValue that)
-    {
-        return false;
-    }
+    // public bool Update(ISemanticValue that) {
+    //     return false;
+    // }
 
-    public ISemanticValue SClone()
-    {
-        return new Individual(id);
-    }
+    // public ISemanticValue SClone()
+    // {
+    //     return new Individual(id);
+    // }
 }
 //import syntax.Expression;
 

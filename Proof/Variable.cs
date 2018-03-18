@@ -6,7 +6,7 @@ public class Variable : LogicalForm {
 
 	public Variable(ISemanticType type, int id) : base(type) {
 		this.id = id;
-		this.isFormula = type.GetType() == typeof(T);
+		this.isFormula = LogicalForm.IsFormulaType(type);
 
 		this.freeVariables = new HashSet<Variable>();
 		this.freeVariables.Add(this);

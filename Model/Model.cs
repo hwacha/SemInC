@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Model {
+public class Model : ISemanticValue {
     // the set of semantic values in a model M.
     // It's queried for the truth value of sentences,
     // and the referents of expressions that refer to
@@ -17,7 +17,7 @@ public class Model {
     // with variables bound to constants for
     // each possible semantic value in the given domain.
     private HashSet<Rule> sentenceRules;
-    
+
     // the rules that have been used to support an inference.
     // They are not checked each time the model updates, until
     // there is an inconsistency which puts it back in play.
@@ -25,7 +25,7 @@ public class Model {
     // of tracking the justification chains of a given proposition
     private HashSet<Rule> activeRules;
 
-    // the model which this model inherets from.
+    // the model which this model inherits from.
     // 1. Denotation(): if not defined in a lower model, should look higher
     // 2. Satisfies(): if not in lower model (for P and -P), then look higher
     // 3. Make()/Update(): only affect lowest level called
@@ -165,6 +165,7 @@ public class Model {
         if (l.IsClosed() && l.IsFormula()) {
             return UpdateInfo.NoChange;
         }
+
         return l.Make(this, v);
     }
     
@@ -198,18 +199,24 @@ public class Model {
 
         do {
             hasChanged = false;
-            foreach (Rule r in sentenceRules) {
-                UpdateInfo info = MakeInference(r);
 
-                if (info == UpdateInfo.Warning) {
-                    // TODO: do inconsistency stuff!
-                    return UpdateInfo.Warning;
-                }
+            Model currentModel = this;
 
-                if (info == UpdateInfo.Updated) {
-                    hasChanged = true;
-                    wasChanged = true;
+            while (currentModel != null) {
+                foreach (Rule r in sentenceRules) {
+                    UpdateInfo info = MakeInference(r);
+
+                    if (info == UpdateInfo.Warning) {
+                        // TODO: do inconsistency stuff!
+                        return UpdateInfo.Warning;
+                    }
+
+                    if (info == UpdateInfo.Updated) {
+                        hasChanged = true;
+                        wasChanged = true;
+                    }
                 }
+                currentModel = currentModel.super;
             }
         } while (hasChanged);
 
@@ -264,22 +271,61 @@ public class Model {
         return theSet;
     }
 
-    // updates THIS model according to m (m is unchanged)
-    // public bool update(Model m)
-    // {
-    //     bool hasUpdated = false;
-    //     foreach (Entry<Integer, ISemanticValue> x in m.model.entrySet())
-    //     {
-    //         if (this.model.containsKey(x.getKey()))
-    //         {
-    //             hasUpdated = this.model.get(x.getKey()).update(x.getValue()) || hasUpdated;
-    //         }
-    //         else
-    //         {
-    //             this.model.put(x.getKey(), x.getValue().sClone());
-    //             hasUpdated = true;
+    public int GetID() {
+        return -1; // TODO idk
+    }
+
+    // public ISemanticValue SClone() {
+    //     Model newModel = new Model(this.super);
+
+    //     foreach (ISemanticType t in this.model.Keys) {
+    //         foreach (int i in this.model[t].Keys) {
+    //             newModel.Add(t, i, this.model[t][i]);
     //         }
     //     }
+
+    //     foreach (ISemanticType t in this.formulaRules.Keys) {
+    //         newModel.formulaRules[t] = new HashSet<Rule>();
+    //         foreach (Rule r in this.formulaRules[t]) {
+    //             newModel.formulaRules[t].Add(r);
+    //         }
+    //     }
+
+    //     foreach (Rule r in this.sentenceRules) {
+    //         newModel.sentenceRules.Add(r);
+    //     }
+
+    //     foreach (Rule r in this.activeRules) {
+    //         newModel.activeRules.Add(r);
+    //     }
+
+    //     return newModel;
+    // }
+
+    // // updates THIS model according to m (m is unchanged)
+    // public bool Update(ISemanticValue that) {
+
+    //     if (!(that.GetType() == typeof(Model))) {
+    //         return false;
+    //     }
+
+    //     Model m = (Model) that;
+
+    //     bool hasUpdated = false;
+
+    //     // go through all of the entries in the model,
+    //     // and replace all the old stuff (this model)
+    //     // with the new stuff (found in the input model)
+    //     // ----------
+    //     // foreach (int i in m.model.EntrySet()) {
+    //     //     if (this.model.containsKey(x.getKey())) {
+    //     //         hasUpdated = this.model.get(x.GetKey()).update(x.GetValue()) || hasUpdated;
+    //     //     }
+    //     //     else {
+    //     //         this.model.put(x.getKey(), x.GetValue().SClone());
+    //     //         hasUpdated = true;
+    //     //     }
+    //     // }
     //     return hasUpdated;
     // }
 }

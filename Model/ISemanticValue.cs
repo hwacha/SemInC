@@ -3,6 +3,6 @@ using System.Collections.Generic;
 
 public interface ISemanticValue {
     int GetID();
-    bool Update(ISemanticValue that);
-    ISemanticValue SClone();
+    // UpdateInfo Update(ISemanticValue that);
+    // ISemanticValue SClone();
 }

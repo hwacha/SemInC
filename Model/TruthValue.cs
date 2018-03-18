@@ -93,31 +93,22 @@ public class TruthValue : ISemanticValue
         else return "F";
     }
 
-    public UpdateInfo update(ISemanticValue that)
-    {   
-        if (!(that.GetType() == typeof(TruthValue)))
-        {
-            return UpdateInfo.NoChange;
-        }
-        TruthValue other = (TruthValue)that;
-        if (other.IsTrue())
-        {
-            return Add(true);
-        }
-        if (other.IsFalse())
-        {
-            return Add(false);
-        }
-        return UpdateInfo.NoChange;
-    }
+    // public UpdateInfo Update(ISemanticValue that)
+    // {   
+    //     if (!(that.GetType() == typeof(TruthValue))) {
+    //         return UpdateInfo.NoChange;
+    //     }
+    //     TruthValue other = (TruthValue)that;
+    //     if (other.IsTrue()) {
+    //         return Add(true);
+    //     }
+    //     if (other.IsFalse()) {
+    //         return Add(false);
+    //     }
+    //     return UpdateInfo.NoChange;
+    // }
 
-    public ISemanticValue SClone()
-    {
-        return (ISemanticValue) new TruthValue(this.value);
-    }
-
-    public bool Update(ISemanticValue that)
-    {
-        throw new NotImplementedException();
-    }
+    // public ISemanticValue SClone() {
+    //     return (ISemanticValue) new TruthValue(this.value);
+    // }
 }

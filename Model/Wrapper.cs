@@ -17,13 +17,13 @@ public class Wrapper : ISemanticValue {
         return l;
     }
 
-    public bool Update(ISemanticValue that) {
-        return false;
-    }
+    // public bool Update(ISemanticValue that) {
+    //     return false;
+    // }
 
-    public ISemanticValue SClone() {
-        return new Wrapper(l);
-    }
+    // public ISemanticValue SClone() {
+    //     return new Wrapper(l);
+    // }
 
     public override bool Equals(Object o) {
         if (o.GetType() == typeof(Wrapper)) {

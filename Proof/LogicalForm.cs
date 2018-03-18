@@ -14,6 +14,12 @@ public abstract class LogicalForm {
         return type;
     }
 
+    protected static bool IsFormulaType(ISemanticType t) {
+        return t.GetType() == typeof(T) ||
+               t.GetType() == typeof(W) ||
+               t.GetType() == typeof(G);
+    }
+
     public bool IsFormula() {
         return isFormula;
     }

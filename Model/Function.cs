@@ -39,34 +39,34 @@ public class Function : ISemanticValue {
         return map.Values;
     }
 
-    public bool Update(ISemanticValue that) {
-        if (!(that.GetType() == typeof(Function))) {
-            return false;
-        }
+    // public bool Update(ISemanticValue that) {
+    //     if (!(that.GetType() == typeof(Function))) {
+    //         return false;
+    //     }
         
-        Function other = (Function) that;
+    //     Function other = (Function) that;
 
-        bool hasUpdated = false;
+    //     bool hasUpdated = false;
 
-        foreach (ISemanticValue k in other.map.Keys) {
-            if (this.map.ContainsKey(k)) {
-                hasUpdated = this.map[k].Update(map[k]) || hasUpdated;
-            } else {
-                this.map[k] = map[k];
-                hasUpdated = true;
-            }
-        }
+    //     foreach (ISemanticValue k in other.map.Keys) {
+    //         if (this.map.ContainsKey(k)) {
+    //             hasUpdated = this.map[k].Update(map[k]) || hasUpdated;
+    //         } else {
+    //             this.map[k] = map[k];
+    //             hasUpdated = true;
+    //         }
+    //     }
 
-        return hasUpdated;
-    }
+    //     return hasUpdated;
+    // }
 
-    public ISemanticValue SClone() {
-        Function f = new Function(id);
-        foreach (ISemanticValue k in map.Keys) {
-            f.Set(k.SClone(), map[k].SClone());
-        }  
-        return f;
-    }
+    // public ISemanticValue SClone() {
+    //     Function f = new Function(id);
+    //     foreach (ISemanticValue k in map.Keys) {
+    //         f.Set(k.SClone(), map[k].SClone());
+    //     }  
+    //     return f;
+    // }
 // 
 //     private string ToString(int depth)
 //     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Not : LogicalForm {
     private LogicalForm sub;
 
-    public Not(LogicalForm sub) : base(new T()) {
+    public Not(LogicalForm sub) : base(sub.GetSemanticType()) {
         if (!sub.IsFormula()) {
             // error!
             return;

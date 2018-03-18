@@ -7,7 +7,7 @@ public class Constant : LogicalForm {
 	public Constant(ISemanticType type, int id) : base(type) {
 		this.type = type;
 		this.id = id;
-        this.isFormula = type.GetType() == typeof(T);
+        this.isFormula = LogicalForm.IsFormulaType(type);
 	}
 
     public override LogicalForm Bind(int id, LogicalForm l) {
