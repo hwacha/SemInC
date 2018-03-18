@@ -48,20 +48,33 @@ public class Model {
     // if no super model argument is provided
     public Model() : this(null) {}
 
+    // simple getter
     public Model GetSuperModel() {
         return super;
     }
 
+    // Adds a semantic value to the model, associating both
+    // a semantic type and an ID number to it.
     public UpdateInfo Add(ISemanticType t, int id, ISemanticValue v) {
+        // if the semantic type isn't currently in the model,
+        // add an entry for it.
         if (!model.ContainsKey(t)) {
             model[t] = new Dictionary<int, ISemanticValue>();
         }
+        // get all the semantic values in the model with the
+        // semantic type, t.
         Dictionary<int, ISemanticValue> modelByType = model[t];
+        // if the ID is already defined for the semantic type t,
+        // then don't change the model at all!
         if (modelByType.ContainsKey(id)) {
             return UpdateInfo.NoChange;
         }
+        // otherwise, set the ID to the semantic value.
         modelByType[id] = v;
 
+        // if there are formula rules with the given semantic type,
+        // then we want to generate a sentence rule that refers
+        // to the new semantic value.
         if (formulaRules.ContainsKey(t)) {
             foreach (Rule fr in formulaRules[t]) {
                 HashSet<Rule> srs = GetSentenceRules(fr);
@@ -70,7 +83,7 @@ public class Model {
                 }
             }
         }
-
+        // if we're here, then we've updated the model!
         return UpdateInfo.Updated;
     }
 
@@ -78,6 +91,7 @@ public class Model {
     public HashSet<Rule> GetSentenceRules(Rule r) {
         HashSet<Rule> sentenceRules = new HashSet<Rule>();
 
+        // if the rule is closed, then it's all set!
         if (r.IsClosed()) {
             sentenceRules.Add(r);
             return sentenceRules;
@@ -86,7 +100,11 @@ public class Model {
         HashSet<Variable> freeVariables = r.GetFreeVariables();
 
         foreach (Variable v in freeVariables) {
+            // TODO optimize by storing domain
+            // the IDs of all the semantic values
+            // with the same semantic type as v
             HashSet<int> ids = GetDomain(v.GetSemanticType());
+            // go through these and make all the sentence rules out of it.
             foreach (int id in ids) {
                 Rule boundRule = r.Bind(v.GetID(), new Constant(v.GetSemanticType(), id));
                 sentenceRules.UnionWith(GetSentenceRules(boundRule));
@@ -96,6 +114,8 @@ public class Model {
         return sentenceRules;
     }
 
+    // Adds a rule, r, to the model.
+    // 
     public void Add(Rule r) {
         if (r.IsClosed()) {
             sentenceRules.Add(r);
