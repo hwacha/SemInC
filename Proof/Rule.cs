@@ -174,8 +174,11 @@ public class Rule
 
 }
 
-// X says that P |- {X believes that P}
-// X believes that P |- {P}, ...
+// X says that P |- {X believes that P}, B
+// X believes that P, F, C |- {P}, X was mistaken
+// ~P
+
+// Decide between B and C
 
 // Bill says that it's raining
 // it's not raining
