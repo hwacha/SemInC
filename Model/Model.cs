@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ public class Model : ISemanticValue {
     // there is an inconsistency which puts it back in play.
     // Also, it's used during inconsistency resolution as a way
     // of tracking the justification chains of a given proposition
-    private HashSet<Rule> activeRules;
+    private Dictionary<LogicalForm, Tuple<HashSet<Rule>, HashSet<Rule>>> activeRules;
 
     // the model which this model inherits from.
     // 1. Denotation(): if not defined in a lower model, should look higher
@@ -40,7 +41,7 @@ public class Model : ISemanticValue {
         this.model = new Dictionary<ISemanticType, Dictionary<int, ISemanticValue>>();
         this.formulaRules = new Dictionary<ISemanticType, HashSet<Rule>>();
         this.sentenceRules = new HashSet<Rule>();
-        this.activeRules = new HashSet<Rule>();
+        this.activeRules = new Dictionary<LogicalForm, Tuple<HashSet<Rule>, HashSet<Rule>>>();
         this.super = super;
     }
 
@@ -175,25 +176,54 @@ public class Model : ISemanticValue {
     }
 
     // makes the inference prescribed by r in this model
-    public UpdateInfo MakeInference(Rule r) {
+    // returns true if there was a change to the model,
+    // false otherwise
+    public bool MakeInference(Rule r) {
         if (!r.IsClosed()) {
-            return UpdateInfo.NoChange;
+            return false;
         }
 
         LogicalForm inference = r.GetInference(this);
 
         if (inference != null) {
             sentenceRules.Remove(r);
-            activeRules.Add(r);
-            return MakeTrue(inference);    
+
+            if (!activeRules.ContainsKey(inference)) {
+                activeRules[inference] =
+                    Tuple.Create(new HashSet<Rule>(),
+                                 new HashSet<Rule>());
+            }
+
+            activeRules[inference].Item2.Add(r);
+
+            UpdateInfo info = MakeTrue(inference);
+
+            // what was inferred was already true. Boring!
+            if (info == UpdateInfo.NoChange) {
+                return false;
+            }
+
+            // we've inferred something which turned out
+            // to be inconsistent. We need to resolve it!
+            if (info == UpdateInfo.Warning) {
+                ResolveInconsistency(inference);
+            }
+
+            // we've either resolved an inconsistency or
+            // inferred something without a hitch, so the
+            // model has changed.
+            return true;
+            
         }
 
-        return UpdateInfo.NoChange;
+        return false;
     }
     
     // iteratively makes inferences based
     // on all the rules in this model.
-    public UpdateInfo MakeInferences() {
+    // returns true if the model changed at all,
+    // false otherwise
+    public bool MakeInferences() {
         bool hasChanged = false;
         bool wasChanged = false;
 
@@ -204,14 +234,7 @@ public class Model : ISemanticValue {
 
             while (currentModel != null) {
                 foreach (Rule r in sentenceRules) {
-                    UpdateInfo info = MakeInference(r);
-
-                    if (info == UpdateInfo.Warning) {
-                        // TODO: do inconsistency stuff!
-                        return UpdateInfo.Warning;
-                    }
-
-                    if (info == UpdateInfo.Updated) {
+                    if (MakeInference(r)) {
                         hasChanged = true;
                         wasChanged = true;
                     }
@@ -220,11 +243,11 @@ public class Model : ISemanticValue {
             }
         } while (hasChanged);
 
-        if (wasChanged) {
-            return UpdateInfo.Updated;
-        } else {
-            return UpdateInfo.NoChange;            
-        }
+        return wasChanged;
+    }
+
+    private void ResolveInconsistency(LogicalForm l) {
+        // TODO all this lol   
     }
 
     // Super compatible

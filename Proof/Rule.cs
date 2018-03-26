@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 public class Rule
 {
@@ -52,7 +53,7 @@ public class Rule
         return freeVariables.Count == 0;
     }
 
-    // returns null if nothing should be inferred,
+    // returns null if nothing should be inferred.
     // otherwise, return what should be inferred
     // when this rule is applied to the model
     // this should only be called when there are no free variables.
@@ -73,7 +74,7 @@ public class Rule
         // is there one and only one top sentence which
         // m fails to satisfy? If all the bottom sentences
         // are rejected, then reject that unique sentence.
-        if (uniquelyUnsatisfiedTop == null) {
+        if (uniquelyUnsatisfiedTop != null) {
             for (int i = 0; i < bot.Length; i++) {
                 foreach (LogicalForm l in bot[i]) {
                     if (!m.Satisfies(new Not(l))) {
@@ -87,45 +88,35 @@ public class Rule
             // it must be that all bottom sentences
             // were rejected. So we should reject
             // the only top sentence not satisfied.
-            return new Not(uniquelyUnsatisfiedTop);
+            return uniquelyUnsatisfiedTop.Negate();
         } else {
             // this is the case where all sentences
             // on the top were true,
             // so we should infer something on the bottom.
-            for (int i = 0; i < bot.Length; i++) {
-                // first, we go through and see if
-                // any sentence on the bottom is true already
-                // if so, we infer nothing new (but still return
-                // that, to let the system know this rule is active).
-                foreach (LogicalForm l in bot[i]) {
-                    if (m.Satisfies(l)) {
-                        return l;
-                    }
+
+            // infer the disjunction of satisfiable sentences
+            // in the first tier
+            HashSet<LogicalForm> satisfiableSentences = new HashSet<LogicalForm>();
+
+            if (bot.Length == 0) {
+                return null;
+            }
+
+            foreach (LogicalForm l in bot[0]) {
+                if (!m.Satisfies(l.Negate())) {
+                    satisfiableSentences.Add(l);
                 }
             }
-            // if none of the bottom sentences are satisfied by M,
-            // then infer the most likely one, via the "tiers"
-            for (int i = 0; i < bot.Length; i++) {
-                LogicalForm uniquelySatisfiable = null;
-                foreach (LogicalForm l in bot[i]) {
-                    if (!m.Satisfies(new Not(l))) {
-                        if (uniquelySatisfiable == null) {
-                            uniquelySatisfiable = l;
-                        } else {
-                            // for now, we treat it as though
-                            // there's no change, when more than
-                            // (We might want to change it
-                            // so that there's a disjunct)
-                            return null;
-                        }
-                    }
-                }
-                // this means one and only one sentence in this tier
-                // is satisfiable. So, we infer it!
-                if (uniquelySatisfiable != null) {
-                    return uniquelySatisfiable;
-                }
+            // this means one and only one sentence in this tier
+            // is satisfiable. So, we infer it!
+            if (satisfiableSentences.Count == 1) {
+                return satisfiableSentences.First();
             }
+
+            if (satisfiableSentences.Count > 1) {
+                return new Or(satisfiableSentences);
+            }
+
             // this means that all of the top sentences were true,
             // but all of the bottom sentences were false.
             // this should make the system try to resolve an
