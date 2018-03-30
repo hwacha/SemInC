@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Individual : ISemanticValue{
+public class Individual : ISemanticValue {
 
     private int id;
     //private Expression name;

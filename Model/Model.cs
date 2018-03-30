@@ -246,8 +246,137 @@ public class Model : ISemanticValue {
         return wasChanged;
     }
 
-    private void ResolveInconsistency(LogicalForm l) {
-        // TODO all this lol   
+    private Policy BestAddition(LogicalForm l) {
+        // TODO make this involve inferences too
+        return new Add(l);
+    }
+
+    private Policy BestRemoval(LogicalForm l) {
+        // first, we find what supports l.
+        if (!activeRules.ContainsKey(l)) {
+            // this means l was not inferred.
+            // What should we do here?
+            return new Remove(l);
+        }
+        
+        foreach (Rule r in activeRules[l].Item2) {
+            HashSet<LogicalForm> top = r.GetTop();
+            HashSet<LogicalForm>[] bot = r.GetBottom();    
+
+            // all the rules where l is on bottom
+            // we can either side-step or remove a top one
+            Policy bestRemoval = null;
+            Policy bestShift = null;
+            
+            if(top.Count > 0) {
+                bestRemoval = BestRemoval(top.First());
+
+                // determine best top to remove
+                foreach (LogicalForm parent in top) {
+                    Policy contender = BestRemoval(parent);
+                    if (CompareLikelihood(bestRemoval, contender) < 0) {
+                        bestRemoval = contender;
+                    }
+                }
+            }
+
+            // THIS IS ALL THE SIDE-STEP STUFF
+            for (int i = 0; i < bot.Length; i++) {
+                HashSet<LogicalForm> currentTier = bot[i];
+
+                foreach (LogicalForm sibling in currentTier) {
+                    if (!Satisfies(sibling.Negate())) {
+                        if (bestShift == null) {
+                            bestShift = BestAddition(sibling);
+                        } else {
+                            int comparitor = CompareLikelihood(bestShift, BestAddition(sibling));
+                            if (comparitor < 0) {
+                                bestShift = BestAddition(sibling);
+                            }
+                        }
+                    }
+                }
+
+                if (bestShift != null) {
+                    break;
+                }
+            }
+
+            // bestRemoval = bestRemoval.Concat(new Remove(l));
+
+            bestShift = bestRemoval.GetDual().Concat(bestShift);
+
+            Policy winner = (CompareLikelihood(bestRemoval, bestShift) > 0) ? bestRemoval : bestShift;
+
+            return winner.Concat(new Remove(l));
+        }
+
+        return null;
+        // TODO collect best results from different rules
+    }
+
+    // if there is an inconsistency with l and -l,
+    // then we need to decide between them.
+    // l is the new thing.
+    private Policy ResolveInconsistency(LogicalForm l) {
+        LogicalForm notL = l.Negate();
+            
+        // okay. new plan:
+        // 1. have two helper methods:
+        //    BestRemoval() and BestInsertion()
+        // 2. recursively call BestRemoval() and
+        //    BestInsertion() and conjoin sentences
+        //    along best removal path
+        // 3. (when there's a negation, check to see)
+        //    whether, in the current rule, there's A
+        //    on top or ~A on bottom
+        // 4. problem for BestInsertion(): have to
+        //    make copy of model to make hypothetical
+        //    inferences
+        // 5. ResolveInconsistency calls BestRemoval()
+        //    on P and ~P, and then removes whichever
+        //    wins out.
+        // 6. Question simply becomes what to yield
+        //    as output for BestInsertion() and BestRemoval()
+        
+        Policy bestL = BestRemoval(l);
+        Policy bestNotL = BestRemoval(notL);
+
+        int comparison = CompareLikelihood(BestRemoval(l), BestRemoval(notL));
+
+        if (comparison > 0) {
+            // TODO perform the removal strategy encoded by bestL
+            return bestL;
+        }
+
+        if (comparison < 0) {
+            // TODO perform the removal strategy encoded by bestNotL
+            return bestNotL;
+        }
+
+        // TODO pick arbitrary one???
+        // rn we're conservative - we pick the older one
+        return bestNotL;
+    }
+
+    // returns 1 if Pr(a) > Pr(b),
+    // 0 if Pr(a) = Pr(b)
+    // -1 if Pr(a) < Pr(b)
+    public int CompareLikelihood(Policy a, Policy b) {
+        if (a == null && b == null) {
+            return 0;
+        }
+
+        if (b == null) {
+            return 1;
+        }
+
+        if (a == null) {
+            return -1;
+        }
+
+        // TODO the actual comparison
+        return 0;
     }
 
     // Super compatible

@@ -15,8 +15,7 @@ public class Rule
     private HashSet<LogicalForm>[] bot;
     private HashSet<Variable> freeVariables;
 
-    public Rule(HashSet<LogicalForm> top, HashSet<LogicalForm>[] bot)
-    {
+    public Rule(HashSet<LogicalForm> top, HashSet<LogicalForm>[] bot) {
         this.top = top;
         this.bot = bot;
 
@@ -113,6 +112,8 @@ public class Rule
                 return satisfiableSentences.First();
             }
 
+            // TODO: infer most likely in the top tier
+
             if (satisfiableSentences.Count > 1) {
                 return new Or(satisfiableSentences);
             }
@@ -162,6 +163,14 @@ public class Rule
 
         return s.ToString();
     }
+    
+     public HashSet<LogicalForm> GetTop(){
+       return top;
+     }
+     
+     public HashSet<LogicalForm>[] GetBottom(){
+       return bot;
+     }
 
 }
 
