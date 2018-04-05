@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Keep : Policy {
+public class Withhold : Policy {
     private LogicalForm l;
     
-    public Keep(LogicalForm l) {
+    public Withhold(LogicalForm l) {
         this.l = l;
     }
     
      public override Policy GetDual() {
-        return new Remove(l);
+        return new Add(l);
     }
 }

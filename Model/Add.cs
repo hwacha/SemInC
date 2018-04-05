@@ -10,6 +10,6 @@ public class Add : Policy {
     }
 
     public override Policy GetDual() {
-        return new Remove(l);
+        return new Withhold(l);
     }
 }
